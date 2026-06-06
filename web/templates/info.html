@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGB - {{.Book.Title}}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f5; color: #18181b; }
+        .nav { background: #18181b; color: #fff; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        .nav a { color: #a1a1aa; text-decoration: none; font-weight: 500; }
+        .nav a:hover { color: #fff; }
+        .nav .brand { font-size: 1.2rem; font-weight: 700; color: #fff; margin-right: auto; }
+        .container { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: #fff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 1rem; font-size: 1.3rem; }
+        h3 { margin-bottom: 0.8rem; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 0.6rem 0.5rem; text-align: left; border-bottom: 1px solid #e4e4e7; }
+        .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .badge-unread { background: #fef3c7; color: #92400e; }
+        .badge-reading { background: #dbeafe; color: #1e40af; }
+        .badge-read { background: #dcfce7; color: #166534; }
+        .btn { display: inline-block; padding: 0.45rem 1rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+        .btn-primary { background: #18181b; color: #fff; }
+        .btn-primary:hover { background: #27272a; }
+        .btn-success { background: #16a34a; color: #fff; }
+        .btn-success:hover { background: #15803d; }
+        .btn-danger { background: #dc2626; color: #fff; }
+        .btn-danger:hover { background: #b91c1c; }
+        .actions { display: flex; gap: 0.3rem; }
+        .flash { padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .flash-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .progress-bar { background: #e4e4e7; border-radius: 4px; height: 8px; margin: 0.5rem 0; }
+        .progress-fill { background: #16a34a; height: 8px; border-radius: 4px; }
+        @media (max-width: 640px) { .nav { flex-wrap: wrap; gap: 0.8rem; } }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <span class="brand">SGB - Gestión de E-Books</span>
+        <a href="/">Inicio</a>
+        <a href="/books/add">Añadir libro</a>
+    </nav>
+    <div class="container">
+        {{if .Flash}}<div class="flash flash-success">{{.Flash}}</div>{{end}}
+        <div class="card">
+            <h2>{{.Book.Title}}</h2>
+            <table>
+                <tr><td style="width:140px;font-weight:600;">ID</td><td>{{.Book.ID}}</td></tr>
+                <tr><td style="font-weight:600;">Autor</td><td>{{.Book.Author}}</td></tr>
+                <tr><td style="font-weight:600;">Género</td><td>{{.Book.Genre}}</td></tr>
+                <tr><td style="font-weight:600;">Formato</td><td>{{.Book.Format}}</td></tr>
+                <tr><td style="font-weight:600;">ISBN</td><td>{{.Book.ISBN}}</td></tr>
+                <tr><td style="font-weight:600;">Páginas</td><td>{{.Book.Pages}}</td></tr>
+                <tr><td style="font-weight:600;">Estado</td><td>{{statusBadge .Book.Status}} {{.Book.Status}}</td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <h3>Lectura</h3>
+            <p style="margin-bottom:0.5rem;">Página actual: <strong>{{.Book.CurrentPage}}</strong> de {{.Book.Pages}}</p>
+            {{if gt .Book.Pages 0}}
+            <div class="progress-bar"><div class="progress-fill" style="width:{{percent .Book.CurrentPage .Book.Pages}}%"></div></div>
+            <p>{{percent .Book.CurrentPage .Book.Pages}}% completado</p>
+            {{end}}
+            {{if .Book.StartedAt}}<p>Iniciado: {{.Book.StartedAt.Format "2006-01-02"}}</p>{{end}}
+            {{if .Book.FinishedAt}}<p>Finalizado: {{.Book.FinishedAt.Format "2006-01-02"}}</p>{{end}}
+            <p>Añadido: {{.Book.AddedAt.Format "2006-01-02"}}</p>
+        </div>
+        <div class="card">
+            <div class="actions">
+                {{if eq .Book.Status "POR_LEER"}}
+                <form method="POST" action="/books/reading/start" style="display:inline">
+                    <input type="hidden" name="id" value="{{.Book.ID}}">
+                    <button class="btn btn-primary">Iniciar lectura</button>
+                </form>
+                {{end}}
+                {{if eq .Book.Status "LEYENDO"}}
+                <form method="POST" action="/books/reading/progress" style="display:inline">
+                    <input type="hidden" name="id" value="{{.Book.ID}}">
+                    <input type="hidden" name="redirect" value="info">
+                    <input type="number" name="page" value="{{.Book.CurrentPage}}" min="0" max="{{.Book.Pages}}" style="width:70px;padding:0.3rem;">
+                    <button class="btn btn-success">Actualizar</button>
+                </form>
+                <form method="POST" action="/books/reading/finish" style="display:inline">
+                    <input type="hidden" name="id" value="{{.Book.ID}}">
+                    <button class="btn btn-success">Finalizar lectura</button>
+                </form>
+                {{end}}
+                <form method="POST" action="/books/delete" style="display:inline" onsubmit="return confirm('¿Eliminar este libro?')">
+                    <input type="hidden" name="id" value="{{.Book.ID}}">
+                    <button class="btn btn-danger">Eliminar</button>
+                </form>
+                <a href="/" class="btn" style="background:#e4e4e7;">Volver al catálogo</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

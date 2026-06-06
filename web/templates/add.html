@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGB - Añadir libro</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f4f4f5; color: #18181b; }
+        .nav { background: #18181b; color: #fff; padding: 1rem 2rem; display: flex; gap: 2rem; align-items: center; }
+        .nav a { color: #a1a1aa; text-decoration: none; font-weight: 500; }
+        .nav a:hover { color: #fff; }
+        .nav .brand { font-size: 1.2rem; font-weight: 700; color: #fff; margin-right: auto; }
+        .container { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: #fff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 1rem; font-size: 1.3rem; }
+        form label { display: block; margin: 0.6rem 0 0.2rem; font-weight: 600; font-size: 0.85rem; }
+        form input, form select { width: 100%; padding: 0.5rem; border: 1px solid #d4d4d8; border-radius: 4px; font-size: 0.9rem; }
+        form input:focus, form select:focus { outline: none; border-color: #18181b; }
+        .btn { display: inline-block; padding: 0.45rem 1rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; text-decoration: none; cursor: pointer; border: none; }
+        .btn-primary { background: #18181b; color: #fff; }
+        .btn-primary:hover { background: #27272a; }
+        .flash { padding: 0.8rem 1rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .flash-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .flash-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; }
+        .form-row .full { grid-column: 1 / -1; }
+        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } .nav { flex-wrap: wrap; gap: 0.8rem; } }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <span class="brand">SGB - Gestión de E-Books</span>
+        <a href="/">Inicio</a>
+        <a href="/books/add">Añadir libro</a>
+    </nav>
+    <div class="container">
+        {{if .Flash}}<div class="flash {{if .FlashSuccess}}flash-success{{else}}flash-error{{end}}">{{.Flash}}</div>{{end}}
+        <div class="card">
+            <h2>Añadir libro</h2>
+            <form method="POST" action="/books/add">
+                <div class="form-row">
+                    <div class="full"><label for="title">Título *</label><input type="text" id="title" name="title" value="{{.Title}}" required></div>
+                    <div><label for="author">Autor *</label><input type="text" id="author" name="author" value="{{.Author}}" required></div>
+                    <div><label for="genre">Género</label><input type="text" id="genre" name="genre" value="{{.Genre}}"></div>
+                    <div><label for="isbn">ISBN</label><input type="text" id="isbn" name="isbn" value="{{.ISBN}}"></div>
+                    <div><label for="pages">Páginas</label><input type="number" id="pages" name="pages" value="{{if gt .Pages 0}}{{.Pages}}{{else}}0{{end}}" min="0"></div>
+                    <div><label for="format">Formato</label>
+                        <select id="format" name="format">
+                            <option value="PDF" {{if eq .Format "PDF"}}selected{{end}}>PDF</option>
+                            <option value="EPUB" {{if eq .Format "EPUB"}}selected{{end}}>EPUB</option>
+                            <option value="MOBI" {{if eq .Format "MOBI"}}selected{{end}}>MOBI</option>
+                            <option value="AZW3" {{if eq .Format "AZW3"}}selected{{end}}>AZW3</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:1rem;">Guardar libro</button>
+                <a href="/" class="btn" style="background:#e4e4e7;margin-top:1rem;">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
