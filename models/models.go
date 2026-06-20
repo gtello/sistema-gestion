@@ -93,3 +93,26 @@ func isValidFormat(f BookFormat) bool {
 		return false
 	}
 }
+
+// ProgressPercent calcula el avance del libro a partir de sus propias páginas.
+func (b Book) ProgressPercent() float64 {
+	if b.Pages == 0 {
+		return 0
+	}
+	return float64(b.CurrentPage) / float64(b.Pages) * 100
+}
+
+// IsToRead indica si el libro aún no ha iniciado su ciclo de lectura.
+func (b Book) IsToRead() bool {
+	return b.Status == StatusToRead
+}
+
+// IsReading indica si el libro está actualmente en lectura.
+func (b Book) IsReading() bool {
+	return b.Status == StatusReading
+}
+
+// IsFinished indica si el libro ya fue marcado como leído.
+func (b Book) IsFinished() bool {
+	return b.Status == StatusFinished
+}

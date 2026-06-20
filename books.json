@@ -19,9 +19,10 @@
     "format": "EPUB",
     "isbn": "",
     "pages": 328,
-    "current_page": 100,
-    "status": "LEYENDO",
+    "current_page": 328,
+    "status": "LEIDO",
     "started_at": "2026-06-01T17:48:57.2998916-05:00",
+    "finished_at": "2026-06-07T12:04:33.1818936-05:00",
     "added_at": "2026-06-01T17:47:30.8708725-05:00"
   },
   {
@@ -83,5 +84,17 @@
     "current_page": 0,
     "status": "POR_LEER",
     "added_at": "2026-06-01T18:28:55.4833969-05:00"
+  },
+  {
+    "id": "AQ6M2IYE",
+    "title": "Clean Code",
+    "author": "Robert C. Martin",
+    "genre": "Programación",
+    "format": "PDF",
+    "isbn": "9780132350884",
+    "pages": 464,
+    "current_page": 0,
+    "status": "POR_LEER",
+    "added_at": "2026-06-07T12:03:59.3289567-05:00"
   }
 ]

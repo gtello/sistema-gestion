@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"sistema-gestion/models"
+	"sync"
 )
 
 // Errores centinela para operaciones de persistencia.
@@ -28,6 +29,7 @@ type Storage interface {
 // no puede cambiar la ruta del archivo, protegiendo la integridad
 // de los datos.
 type JSONStorage struct {
+	mu   sync.Mutex
 	path string
 }
 
@@ -41,6 +43,9 @@ func NewJSONStorage(path string) *JSONStorage {
 // si el archivo no existe (primera ejecución), y envuelve el error con
 // ErrLoad para otros fallos.
 func (s *JSONStorage) Load() ([]models.Book, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	data, err := os.ReadFile(s.path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -59,6 +64,9 @@ func (s *JSONStorage) Load() ([]models.Book, error) {
 // Save serializa el catálogo a JSON indentado y lo escribe en disco.
 // Envuelve el error con ErrSave para que el caller pueda identificarlo.
 func (s *JSONStorage) Save(books []models.Book) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	data, err := json.MarshalIndent(books, "", "  ")
 	if err != nil {
 		return fmt.Errorf("%w: %v", ErrSave, err)
